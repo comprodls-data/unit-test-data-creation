@@ -71,9 +71,22 @@ function del(requestURL, queries, requestHeader, callback) {
         .end(callback);
 }
 
+function put(requestURL, requestBody, requestHeader, callback) {
+    var url = requestURL;
+    var body = requestBody;
+    var header = requestHeader;
+
+    request
+        .put(url)
+        .send(body)
+        .set(header)
+        .end(callback);
+}
+
 module.exports = {
     post: post,
     get: get,
     del: del,
+    put: put,
     uploadFile:postAttachment
 };

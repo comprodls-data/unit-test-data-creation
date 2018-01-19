@@ -66,6 +66,45 @@ function authenticateAdmin(callback){
     });
 }
 
+function updateOrgSettings(callback){
+    var org = config_data.admin.orgid;
+    testhelpers.put(gbl_auth_service_url + 'org/' + org + '/settings',
+        { "lti": {
+            "auto_entitle_classproducts": true,
+            "enable": true,
+            "user_enrollments": 500
+           },
+            "product": {
+                "promote": "disabled",
+                "archive": "enabled",
+                "ingestion": "enabled"
+            },
+            "provisioning": {
+                "general": {
+                    "product-entitlement": true
+                }
+            },
+            "registrations": {
+            "user": {
+                "strategy": "automated",
+                "enabled": true
+            }
+        }},
+        { "Authorization" : config_data.admin.token},
+        function(err , res) {
+            if (err) {
+                console.log(err);
+                console.log("Error while updating settings of org".red);
+            }
+            else {
+                console.log(("Successfully updating settings of org ").green);
+            }
+            if(callback){
+                callback();
+            }
+        });
+}
+
 function authenticateTeachers(callback){
     var org = config_data.admin.orgid;
     var authenticateTeachertLoop = function(counter, authenticateTeacherCallback){
@@ -514,47 +553,48 @@ function writeDataToJSONFile(jsonFilePath){
 }
 
 authenticateAdmin(function(){
-    setupUsers(function(){
-        setTimeout(function() {
-            registerProducts(function(){
-                ingestProducts(function(){
-                    console.log("********** intermediate result **************");
-                    console.log(JSON.stringify(products));
-                    console.log("************************");
-                    setTimeout(function(){
-                        authenticateTeachers(function(){
-                            console.log("********* user detail ***************");
-                            console.log(JSON.stringify(users));
-                            console.log("************************");
-                            createClasses(function(){
-                                setTimeout(function() {
-                                    classProductAssociation(function() {
-                                        getProduct(function() {
-                                            console.log("********** product detail **************");
-                                            console.log(JSON.stringify(products));
-                                            console.log("************************");
-                                            createAssignment(function(){
-                                                setTimeout(function(){
-                                                    getClassDetail(function(){
-                                                        output.products=products;
-                                                        output.users = users;
-                                                        output.assignment = assignment;
-                                                        console.log("*********** Final output *************");
-                                                        console.log(JSON.stringify(output));
-                                                        console.log("************************");
-                                                        writeDataToJSONFile(filePath);
-                                                    });
-                                                },10000);
+    updateOrgSettings(function(){
+        setupUsers(function(){
+            setTimeout(function() {
+                registerProducts(function(){
+                    ingestProducts(function(){
+                        console.log("********** intermediate result **************");
+                        console.log(JSON.stringify(products));
+                        console.log("************************");
+                        setTimeout(function(){
+                            authenticateTeachers(function(){
+                                console.log("********* user detail ***************");
+                                console.log(JSON.stringify(users));
+                                console.log("************************");
+                                createClasses(function(){
+                                    setTimeout(function() {
+                                        classProductAssociation(function() {
+                                            getProduct(function() {
+                                                console.log("********** product detail **************");
+                                                console.log(JSON.stringify(products));
+                                                console.log("************************");
+                                                createAssignment(function(){
+                                                    setTimeout(function(){
+                                                        getClassDetail(function(){
+                                                            output.products=products;
+                                                            output.users = users;
+                                                            output.assignment = assignment;
+                                                            console.log("*********** Final output *************");
+                                                            console.log(JSON.stringify(output));
+                                                            console.log("************************");
+                                                            writeDataToJSONFile(filePath);
+                                                        });
+                                                    },10000);
+                                                });
                                             });
                                         });
-                                    });
-                                }, 7000);
+                                    }, 7000);
+                                });
                             });
-                        });
-                    },180000);
+                        },180000);
+                    });
                 });
-            });
-        }, 7000);
+            }, 7000);
+        });
     });
 });
-
