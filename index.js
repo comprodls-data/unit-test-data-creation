@@ -1,8 +1,3 @@
-
-/**
- * Created by karan on 1/03/2018.
- * Assumes at max 1 assignment per class, else need to update function getAssignment().
- */
 //'use strict';
 
 var testhelpers = require('./testhelpers');
@@ -553,48 +548,63 @@ function writeDataToJSONFile(jsonFilePath){
 }
 
 authenticateAdmin(function(){
-    updateOrgSettings(function(){
-        setupUsers(function(){
-            setTimeout(function() {
-                registerProducts(function(){
-                    ingestProducts(function(){
-                        console.log("********** intermediate result **************");
-                        console.log(JSON.stringify(products));
-                        console.log("************************");
-                        setTimeout(function(){
-                            authenticateTeachers(function(){
-                                console.log("********* user detail ***************");
-                                console.log(JSON.stringify(users));
-                                console.log("************************");
-                                createClasses(function(){
-                                    setTimeout(function() {
-                                        classProductAssociation(function() {
-                                            getProduct(function() {
-                                                console.log("********** product detail **************");
-                                                console.log(JSON.stringify(products));
-                                                console.log("************************");
-                                                createAssignment(function(){
-                                                    setTimeout(function(){
-                                                        getClassDetail(function(){
-                                                            output.products=products;
-                                                            output.users = users;
-                                                            output.assignment = assignment;
-                                                            console.log("*********** Final output *************");
-                                                            console.log(JSON.stringify(output));
-                                                            console.log("************************");
-                                                            writeDataToJSONFile(filePath);
+    setTimeout(function(){
+        updateOrgSettings(function(){
+            setTimeout(function(){
+                setupUsers(function(){
+                    setTimeout(function() {
+                        registerProducts(function(){
+                            setTimeout(function(){
+                                ingestProducts(function(){
+                                    console.log("********** intermediate result **************");
+                                    console.log(JSON.stringify(products));
+                                    console.log("************************");
+                                    setTimeout(function(){
+                                        authenticateTeachers(function(){
+                                            console.log("********* user detail ***************");
+                                            console.log(JSON.stringify(users));
+                                            console.log("************************");
+                                            setTimeout(function(){
+                                                createClasses(function(){
+                                                    setTimeout(function() {
+                                                        classProductAssociation(function() {
+                                                            setTimeout(function(){
+                                                                getProduct(function() {
+                                                                    console.log("********** product detail **************");
+                                                                    console.log(JSON.stringify(products));
+                                                                    console.log("************************");
+                                                                    setTimeout(function(){
+                                                                        createAssignment(function(){          
+                                                                            setTimeout(function(){
+                                                                                getClassDetail(function(){
+
+                                                                                    setTimeout(function(){
+                                                                                        output.products=products;
+                                                                                        output.users = users;
+                                                                                        output.assignment = assignment;
+                                                                                        console.log("*********** Final output *************");
+                                                                                        console.log(JSON.stringify(output));
+                                                                                        console.log("************************");
+                                                                                        writeDataToJSONFile(filePath);
+                                                                                        },5000);
+                                                                                });
+                                                                            },10000);
+                                                                        });
+                                                                        },5000);
+                                                             });
+                                                                },5000);
                                                         });
-                                                    },10000);
+                                                    }, 7000);
                                                 });
-                                            });
+                                                },5000);
                                         });
-                                    }, 7000);
+                                    },180000);
                                 });
-                            });
-                        },180000);
-                    });
+                                },5000);
+                        });
+                    }, 7000);
                 });
-            }, 7000);
+                },5000);
         });
-    });
+        },5000);
 });
